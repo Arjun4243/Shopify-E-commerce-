@@ -81,16 +81,19 @@
         {% endif %}
       "
     >
-      <button
-        class="button close-button menu-drawer__close-button focus-inset"
-        type="button"
-        aria-label="{{ 'actions.close' | t }}"
-        on:click="/close"
-      >
-        <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-          {{- 'icon-close-menu.svg' | inline_asset_content -}}
-        </span>
-      </button>
+      <div class="menu-drawer__header">
+        <span class="menu-drawer__header-title">Menu</span>
+        <button
+          class="button close-button menu-drawer__close-button focus-inset"
+          type="button"
+          aria-label="{{ 'actions.close' | t }}"
+          on:click="/close"
+        >
+          <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+            {{- 'icon-close-menu.svg' | inline_asset_content -}}
+          </span>
+        </button>
+      </div>
       <nav
         class="menu-drawer__navigation"
         style="
@@ -900,6 +903,24 @@
     }
   }
 
+  .menu-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding-inline-start: 16px;
+    border-block-end: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+
+  .menu-drawer__header-title {
+    color: var(--color-foreground);
+    font-family: var(--menu-top-level-font-family);
+    font-size: 13px;
+    font-weight: var(--menu-top-level-font-weight);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
   /* When opening a submenu we don't want the first-level menu to be scrollable, so we reset the overflow  */
   .menu-drawer.menu-drawer--has-submenu-opened {
     overflow: initial;
@@ -1066,7 +1087,14 @@
 
   .menu-drawer__list-item--flat .menu-drawer__menu--childlist {
     width: 100%;
-    padding-inline: 0;
+    padding: 10px 12px;
+    margin-block-start: 8px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    border-radius: 14px;
+    background:
+      linear-gradient(135deg, rgb(250 246 255 / 0.94), rgb(244 251 255 / 0.9)),
+      var(--color-background);
+    box-shadow: 0 14px 34px rgb(var(--color-foreground-rgb) / 0.08);
   }
 
   .menu-drawer-container[open] .menu-drawer__animated-element {
@@ -1131,9 +1159,14 @@
     line-height: var(--menu-child-font-line-height);
     text-transform: var(--menu-child-font-case);
     color: var(--menu-child-font-color);
+    border-radius: 10px;
+    padding: 9px 12px;
+    transition: color 180ms ease, background-color 180ms ease, transform 180ms ease;
 
     &:hover {
       color: var(--menu-child-font-color);
+      background-color: rgb(var(--color-foreground-rgb) / 0.05);
+      transform: translateX(3px);
     }
   }
 
@@ -1216,11 +1249,22 @@
     height: fit-content;
     color: inherit;
     padding: 12px 16px;
+    transition: color 180ms ease, transform 180ms ease;
   }
 
   .menu-drawer__close-button .header-drawer-icon--close {
     width: 20px;
     height: 20px;
+    transition: transform 220ms ease;
+  }
+
+  .menu-drawer__close-button:hover {
+    color: #8a148f;
+    transform: scale(1.06);
+  }
+
+  .menu-drawer__close-button:hover .header-drawer-icon--close {
+    transform: rotate(90deg);
   }
 
   .menu-drawer__back-button {
@@ -1286,6 +1330,61 @@
     padding-block: var(--padding-lg);
     padding-inline-start: var(--padding-xl);
     flex-shrink: 0;
+  }
+
+  .menu-drawer__menu-item > .icon-plus {
+    width: 24px;
+    height: 24px;
+    margin-inline-start: 8px;
+    padding: 0;
+    border-radius: 999px;
+    color: #8a148f;
+    background: linear-gradient(135deg, rgb(250 240 255), rgb(244 251 255));
+    box-shadow: 0 6px 16px rgb(138 20 143 / 0.12);
+    position: relative;
+    transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .menu-drawer__menu-item > .icon-plus svg {
+    display: none;
+  }
+
+  .menu-drawer__menu-item > .icon-plus::before,
+  .menu-drawer__menu-item > .icon-plus::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 9px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 220ms ease;
+  }
+
+  .menu-drawer__menu-item > .icon-plus::before {
+    transform: translate(-82%, -50%) rotate(45deg);
+  }
+
+  .menu-drawer__menu-item > .icon-plus::after {
+    transform: translate(-18%, -50%) rotate(-45deg);
+  }
+
+  .menu-drawer__menu-item:hover > .icon-plus {
+    color: #6d0f72;
+    background: linear-gradient(135deg, rgb(246 229 255), rgb(235 248 255));
+    box-shadow: 0 8px 20px rgb(138 20 143 / 0.18);
+    transform: translateY(-1px);
+  }
+
+  details[open] > summary .menu-drawer__menu-item > .icon-plus::before,
+  details[open] > summary.menu-drawer__menu-item > .icon-plus::before {
+    transform: translate(-82%, -50%) rotate(-45deg);
+  }
+
+  details[open] > summary .menu-drawer__menu-item > .icon-plus::after,
+  details[open] > summary.menu-drawer__menu-item > .icon-plus::after {
+    transform: translate(-18%, -50%) rotate(45deg);
   }
 
   .menu-drawer__list-item--divider .menu-drawer__menu-item > .svg-wrapper {
