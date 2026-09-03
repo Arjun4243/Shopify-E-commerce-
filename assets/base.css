@@ -1885,3 +1885,26 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
     margin-top: calc(var(--header-height) * var(--transparent-header-offset-boolean) * -1);
   }
 }
+
+.header__menu .disclosure__button .icon-caret,
+.header__menu .disclosure__button svg {
+  display: none !important;
+}
+
+.header__menu .disclosure__button::after {
+  content: "›" !important;
+  font-size: 20px;
+  font-weight: 300;
+  margin-left: 4px;
+}
+
+/* Mobile menu items - background + shadow */
+.header__menu .disclosure__list a,
+.mobile-menu__item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 4px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: block;
+}
