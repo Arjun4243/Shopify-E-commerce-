@@ -851,8 +851,9 @@
     }
 
     @media screen and (max-width: 749px) {
+      --header-mobile-bookend: 38px;
       --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
-        var(--header-mobile-bookend) var(--header-mobile-bookend);
+        var(--header-mobile-bookend) calc(var(--header-mobile-bookend) * 2);
 
       grid-template-areas: 'leftA leftB center rightA rightB';
       grid-column: span 3;
@@ -874,7 +875,7 @@
       }
 
       .search-action {
-        grid-area: leftB;
+        grid-area: rightA;
       }
 
       header-actions {
@@ -886,8 +887,9 @@
   /* not ideal but we need to duplicate these styles for when touch comes into play
     We could avoid the duplication using js to set the data-menu-style attribute on small screens instead of using @media queries */
   #header-component[data-menu-style='drawer'] .header__columns {
+    --header-mobile-bookend: 38px;
     --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
-      var(--header-mobile-bookend) var(--header-mobile-bookend);
+      var(--header-mobile-bookend) calc(var(--header-mobile-bookend) * 2);
 
     grid-template-areas: 'leftA leftB center rightA rightB';
     grid-column: span 3;
@@ -909,11 +911,37 @@
     }
 
     .search-action {
-      grid-area: leftB;
+      grid-area: rightA;
     }
 
     header-actions {
       grid-area: rightB;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .header__row--top {
+      padding-block-start: var(--padding-2xs);
+    }
+
+    .header__row--top .header__columns {
+      min-height: 68px;
+      margin-inline: var(--padding-sm);
+      padding-inline: var(--padding-2xs);
+      border-radius: 28px 28px 0 0;
+      background: var(--color-background-top-row);
+      overflow: hidden;
+    }
+
+    .header__row--top .search-action,
+    .header__row--top .header-actions__action {
+      width: var(--header-mobile-bookend);
+      justify-content: center;
+    }
+
+    .header__row--top header-actions {
+      width: calc(var(--header-mobile-bookend) * 2);
+      justify-content: flex-end;
     }
   }
 
