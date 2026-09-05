@@ -398,7 +398,27 @@
 
   .menu-list__link-title {
     padding-inline: var(--gap-sm);
+    position: relative;
+    padding-block: 0.15rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: var(--gap-sm);
+      inset-block-end: -0.35rem;
+      height: 2px;
+      border-radius: 999px;
+      background-color: currentColor;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform var(--animation-speed) var(--animation-easing);
+    }
   }
+
+  .menu-list__link:hover .menu-list__link-title::after {
+    transform: scaleX(1);
+  }
+
   [slot='overflow'] .menu-list__link-title {
     padding-inline: 0;
   }
@@ -486,6 +506,20 @@
     padding-inline: var(--padding-inline);
     clip-path: rect(var(--submenu-clip-top) 100% var(--full-open-header-height) 0); /* stylelint-disable-line */
     transition: clip-path var(--submenu-animation-speed) var(--ease-out-cubic); /* stylelint-disable-line */
+  }
+
+  #header-component:has(.menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu:not([inert]))
+    .header__underlay-open {
+    height: var(--header-height);
+    background: linear-gradient(
+      var(--color-background-top-row) 0 var(--top-row-height),
+      var(--color-background-bottom-row) var(--top-row-height) var(--header-height)
+    );
+  }
+
+  #header-component:has(.menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu:not([inert]))
+    .header__underlay-open::after {
+    content: none;
   }
 
   /* Keep the submenu transparent (color-custom paints an opaque bg) so the
@@ -614,11 +648,57 @@
     transform: translateY(calc(var(--full-open-header-height) - var(--submenu-height)));
 
     /* Make overflow menu scrollable when content exceeds viewport */
-    max-height: calc(80vh - var(--header-height));
+   
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: rgb(var(--color-foreground-rgb) / var(--opacity-40)) transparent;
+    scrollbar-color: rgb(var(--color-foreground-rgb) / var(--opacity-100)) ;
+  }
+
+  .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(var(--gap-lg), 2vw, var(--gap-2xl));
+    align-items: stretch;
+    width: min(100%, 1200px);
+    margin-inline: auto;
+    padding: clamp(var(--padding-lg), 2vw, var(--padding-2xl));
+    background-color: #fff;
+    border: var(--style-border-popover);
+    border-radius: 28px;
+    box-shadow: var(--shadow-popover);
+  }
+
+  .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner .mega-menu {
+    min-width: 0;
+  }
+
+  .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner .mega-menu__grid {
+    gap: var(--gap-xl);
+    padding-inline: 0;
+  }
+
+  .mega-menu__grid:has(.mega-menu__list--icon-grid) {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .menu-list__list-item:where(:not([slot='overflow']))
+    > .menu-list__submenu
+    > .menu-list__submenu-inner:has(.mega-menu__list--icon-grid) {
+    width: fit-content;
+    max-width: min(100%, 1200px);
+  }
+
+  .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner .mega-menu__column {
+    padding-inline-end: var(--gap-lg);
+    border-inline-end: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+
+  .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner .mega-menu__column:last-child {
+    border-inline-end: none;
+    padding-inline-end: 0;
   }
 
   .mega-menu__link {
@@ -632,11 +712,78 @@
     white-space: normal;
     text-decoration: none;
     display: inline-flex;
-    padding: var(--padding-2xs) 0;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: var(--padding-xs) 0;
+
+    &::before {
+      content: '';
+      flex-shrink: 0;
+      width: 0.55rem;
+      height: 0.55rem;
+      margin-top: 0.45rem;
+      border-radius: 999px;
+      border: 1.5px solid rgb(var(--color-foreground-rgb) / 0.35);
+      transition:
+        border-color var(--animation-speed) var(--animation-easing),
+        background-color var(--animation-speed) var(--animation-easing);
+    }
 
     &:hover {
       color: var(--menu-child-active-font-color);
+
+      &::before {
+        border-color: currentColor;
+        background-color: currentColor;
+      }
     }
+  }
+
+  .mega-menu__link:has(.mega-menu__link-icon) {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding-block: clamp(0.7rem, 1vw, 1rem);
+
+    &::before {
+      content: none;
+    }
+  }
+
+  .mega-menu__link-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    aspect-ratio: 1;
+    flex-shrink: 0;
+
+    & img {
+      display: block;
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+  }
+
+  .mega-menu__link-copy {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .mega-menu__link-label {
+    font-weight: 650;
+    color: var(--menu-parent-font-color);
+  }
+
+  .mega-menu__link-description {
+    max-width: 22ch;
+    font-size: max(0.82rem, calc(var(--menu-child-font-size) * 0.92));
+    line-height: 1.35;
+    color: rgb(var(--color-foreground-rgb) / 0.68);
   }
 
   .mega-menu__link--parent {
@@ -648,9 +795,22 @@
     text-transform: var(--menu-parent-font-case);
     color: var(--menu-parent-font-color);
 
+    &::before {
+      width: 0.85rem;
+      height: 0.85rem;
+      margin-top: 0.2rem;
+      border-radius: 0.35rem;
+      border-color: rgb(var(--color-foreground-rgb) / 0.2);
+      background-color: transparent;
+    }
+
     &:hover {
       color: var(--menu-parent-active-font-color);
     }
+  }
+
+  .mega-menu__link--parent:has(.mega-menu__link-icon)::before {
+    content: none;
   }
 
   @media screen and (max-width: 989px) {
@@ -774,6 +934,21 @@
     }
   }
 
+  .mega-menu__list--icon-grid {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(210px, max-content));
+    grid-template-rows: repeat(var(--mega-menu-icon-rows), auto);
+    grid-auto-flow: column;
+    column-gap: clamp(1.5rem, 4vw, 3.5rem);
+    row-gap: clamp(1rem, 1.8vw, 1.5rem);
+  }
+
+  .mega-menu__list--icon-grid .mega-menu__column {
+    grid-column: auto;
+    padding-inline-end: 0;
+    border-inline-end: none;
+  }
+
   .mega-menu__content {
     grid-column: span var(--menu-content-columns-tablet) / -1;
 
@@ -804,6 +979,25 @@
   .mega-menu__submenu {
     /* preserves the inherited grid layout when this submenu wrapper is used */
     display: contents;
+  }
+
+  @media screen and (max-width: 989px) {
+    .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner {
+      display: block;
+      width: 100%;
+      padding: var(--padding-xl);
+    }
+
+    .menu-list__list-item:where(:not([slot='overflow'])) > .menu-list__submenu > .menu-list__submenu-inner .mega-menu__column {
+      padding-inline-end: 0;
+      border-inline-end: none;
+    }
+
+    .mega-menu__list--icon-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: none;
+      grid-auto-flow: row;
+    }
   }
 
   /* Hide product cards in collapsed submenus from the IntersectionObserver that fires product view events */

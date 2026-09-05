@@ -71,12 +71,43 @@
     endif
   endif
 %}
+{% liquid
+  assign icon_grid_rows = parent_link.links.size | times: 1.0 | divided_by: 3 | ceil
+%}
 <ul
   data-menu-list-id="{{ id }}"
-  class="mega-menu__list list-unstyled"
-  style="--menu-image-border-radius: {{ image_border_radius }}px;"
+  class="mega-menu__list{% if menu_content_type == 'text' %} mega-menu__list--icon-grid{% endif %} list-unstyled"
+  style="--menu-image-border-radius: {{ image_border_radius }}px; --mega-menu-icon-rows: {{ icon_grid_rows }};"
 >
   {% for link in parent_link.links %}
+    {% if menu_content_type == 'text' %}
+      <li class="mega-menu__column mega-menu__icon-grid-item">
+        <div>
+          <a
+            href="{{ link.url }}"
+            class="mega-menu__link {% if link.links != blank %}mega-menu__link--parent{% endif %}"
+          >
+            {% render 'mega-menu-icon-link-content', title: link.title %}
+          </a>
+          {% if link.links != blank %}
+            <ul class="list-unstyled">
+              {% for childLink in link.links %}
+                <li>
+                  <a
+                    href="{{ childLink.url }}"
+                    class="mega-menu__link"
+                  >
+                    {% render 'mega-menu-icon-link-content', title: childLink.title %}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </li>
+      {% continue %}
+    {% endif %}
+
     {% liquid
       # Decide whether to open a column span, and how many columns of the grid to span
       if forloop.first or open_column_span == false
@@ -131,9 +162,13 @@
 
           {% render 'link-featured-image', link: link, class: 'mega-menu__link-image', sizes: collection_image_sizes %}
         {% endif %}
-        <span class="wrap-text">
-          {{- link.title -}}
-        </span>
+        {% if menu_content_type == 'text' %}
+          {% render 'mega-menu-icon-link-content', title: link.title %}
+        {% else %}
+          <span class="wrap-text">
+            {{- link.title -}}
+          </span>
+        {% endif %}
       </a>
       {% if link.links != blank %}
         <ul
@@ -153,7 +188,11 @@
                 href="{{ childLink.url }}"
                 class="mega-menu__link"
               >
-                <span class="wrap-text">{{- childLink.title -}}</span>
+                {% if menu_content_type == 'text' %}
+                  {% render 'mega-menu-icon-link-content', title: childLink.title %}
+                {% else %}
+                  <span class="wrap-text">{{- childLink.title -}}</span>
+                {% endif %}
               </a>
             </li>
           {% endfor %}
