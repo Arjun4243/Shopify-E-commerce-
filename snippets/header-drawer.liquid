@@ -50,7 +50,7 @@
 ></script>
 
 <header-drawer
-  class="header-drawer {{ class }}"
+  class="header-drawer {{ class }}{% if block_settings.mobile_drawer_custom_design %} header-drawer--gemora{% endif %}"
   style="--menu-image-border-radius: {{ image_border_radius }}px; --resource-card-corner-radius: {{ image_border_radius }}px;"
 >
   <details
@@ -79,19 +79,53 @@
         {% if block_settings.background_color != blank or block_settings.text_color != blank %}
           color-custom-{{ block.id }}
         {% endif %}
+        {% if block_settings.mobile_drawer_custom_design %}
+          menu-drawer--gemora
+        {% endif %}
       "
     >
       <div class="menu-drawer__header">
-        <span class="menu-drawer__header-title">Menu</span>
+        {% if block_settings.mobile_drawer_custom_design %}
+          <div class="gemora-mobile-drawer-brand">
+            {% if block_settings.mobile_drawer_brand_logo != blank %}
+              <img
+                src="{{ block_settings.mobile_drawer_brand_logo | image_url: width: 160 }}"
+                alt="{{ block_settings.mobile_drawer_brand_title | escape }}"
+                class="gemora-mobile-drawer-brand__logo"
+                loading="eager"
+                width="120"
+                height="38"
+              >
+            {% else %}
+              <span class="gemora-mobile-drawer-brand__mark" aria-hidden="true">
+                <i class="bi bi-gem"></i>
+              </span>
+              <span class="gemora-mobile-drawer-brand__text">
+                <span class="gemora-mobile-drawer-brand__title">{{ block_settings.mobile_drawer_brand_title | escape }}</span>
+                {% if block_settings.mobile_drawer_brand_subtitle != blank %}
+                  <span class="gemora-mobile-drawer-brand__subtitle">
+                    {{- block_settings.mobile_drawer_brand_subtitle | escape -}}
+                  </span>
+                {% endif %}
+              </span>
+            {% endif %}
+          </div>
+        {% else %}
+          <span class="menu-drawer__header-title">Menu</span>
+        {% endif %}
         <button
           class="button close-button menu-drawer__close-button focus-inset"
           type="button"
           aria-label="{{ 'actions.close' | t }}"
           on:click="/close"
         >
-          <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-            {{- 'icon-close-menu.svg' | inline_asset_content -}}
-          </span>
+          {% if block_settings.mobile_drawer_custom_design %}
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          {% else %}
+            <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+              {{- 'icon-close-menu.svg' | inline_asset_content -}}
+            </span>
+          {% endif %}
         </button>
       </div>
       <nav
@@ -135,12 +169,20 @@
                     >
                       <summary
                         id="HeaderDrawer-{{ link.handle }}"
-                        class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element"
+                        class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if block_settings.mobile_drawer_custom_design %} gemora-mobile-drawer__item{% endif %}"
                       >
-                        <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
-                        <span class="svg-wrapper icon-plus">
-                          {{- 'icon-plus.svg' | inline_asset_content -}}
-                        </span>
+                        {% if block_settings.mobile_drawer_custom_design %}
+                          {% render 'mobile-drawer-card-content',
+                            link: link,
+                            block_settings: block_settings,
+                            action_icon: 'bi-chevron-down'
+                          %}
+                        {% else %}
+                          <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                          <span class="svg-wrapper icon-plus">
+                            {{- 'icon-plus.svg' | inline_asset_content -}}
+                          </span>
+                        {% endif %}
                       </summary>
                       {% liquid
                         assign render_link_image = false
@@ -196,12 +238,16 @@
                   <a
                     id="HeaderDrawer-{{ link.handle }}"
                     href="{{ link.url }}"
-                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element"
+                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if block_settings.mobile_drawer_custom_design %} gemora-mobile-drawer__item{% endif %}"
                     {% if link.current %}
                       aria-current="page"
                     {% endif %}
                   >
-                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% if block_settings.mobile_drawer_custom_design %}
+                      {% render 'mobile-drawer-card-content', link: link, block_settings: block_settings %}
+                    {% else %}
+                      <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% endif %}
                   </a>
                   {% liquid
                     assign render_link_image = false
@@ -250,12 +296,16 @@
                   <a
                     id="HeaderDrawer-{{ link.handle }}"
                     href="{{ link.url }}"
-                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element"
+                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if block_settings.mobile_drawer_custom_design %} gemora-mobile-drawer__item{% endif %}"
                     {% if link.current %}
                       aria-current="page"
                     {% endif %}
                   >
-                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% if block_settings.mobile_drawer_custom_design %}
+                      {% render 'mobile-drawer-card-content', link: link, block_settings: block_settings %}
+                    {% else %}
+                      <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% endif %}
                   </a>
                 {% endif %}
               </li>
@@ -281,13 +331,21 @@
                   >
                     <summary
                       id="HeaderDrawer-{{ link.handle }}"
-                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if link.child_active %} menu-drawer__menu-item--active{% endif %}"
+                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if link.child_active %} menu-drawer__menu-item--active{% endif %}{% if block_settings.mobile_drawer_custom_design %} gemora-mobile-drawer__item{% endif %}"
                       on:click="header-drawer/open/submenu"
                     >
-                      <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
-                      <span class="svg-wrapper icon-caret icon-caret--forward">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
-                      </span>
+                      {% if block_settings.mobile_drawer_custom_design %}
+                        {% render 'mobile-drawer-card-content',
+                          link: link,
+                          block_settings: block_settings,
+                          action_icon: 'bi-chevron-right'
+                        %}
+                      {% else %}
+                        <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                        <span class="svg-wrapper icon-caret icon-caret--forward">
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        </span>
+                      {% endif %}
                     </summary>
                     <div
                       id="link-{{ link.handle | escape }}"
@@ -579,12 +637,16 @@
                   <a
                     id="HeaderDrawer-{{ link.handle }}"
                     href="{{ link.url }}"
-                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element"
+                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if block_settings.mobile_drawer_custom_design %} gemora-mobile-drawer__item{% endif %}"
                     {% if link.current %}
                       aria-current="page"
                     {% endif %}
                   >
-                    <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% if block_settings.mobile_drawer_custom_design %}
+                      {% render 'mobile-drawer-card-content', link: link, block_settings: block_settings %}
+                    {% else %}
+                      <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {% endif %}
                   </a>
                 {%- endif -%}
               </li>
@@ -1592,5 +1654,187 @@
 
   .drawer-localization .language-selector .svg-wrapper.icon-caret svg {
     transform: none;
+  }
+
+  .menu-drawer--gemora {
+    --drawer-width: min(93vw, 340px);
+    --drawer-max-width: 340px;
+    padding: 14px 12px 16px;
+    color: var(--color-foreground);
+    background:
+      radial-gradient(circle at 85% 14%, rgb(196 154 108 / 0.12), transparent 28%),
+      linear-gradient(135deg, #fffaf5, #ffffff 52%, #fff7f1);
+    border-right: 0;
+    box-shadow: 18px 0 42px rgb(37 24 17 / 0.18);
+  }
+
+  .menu-drawer--gemora .menu-drawer__header {
+    min-height: 38px;
+    padding: 0 2px 12px;
+    border-block-end: 0;
+  }
+
+  .gemora-mobile-drawer-brand {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 9px;
+    color: #2e2722;
+  }
+
+  .gemora-mobile-drawer-brand__logo {
+    display: block;
+    width: auto;
+    max-width: 156px;
+    height: auto;
+    max-height: 42px;
+    object-fit: contain;
+  }
+
+  .gemora-mobile-drawer-brand__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    color: #9a6734;
+    font-size: 24px;
+  }
+
+  .gemora-mobile-drawer-brand__text {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+    line-height: 1;
+  }
+
+  .gemora-mobile-drawer-brand__title {
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .gemora-mobile-drawer-brand__subtitle {
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #9a6734;
+  }
+
+  .menu-drawer--gemora .menu-drawer__close-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    color: #352c27;
+    font-size: 18px;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .menu-drawer--gemora .menu-drawer__navigation {
+    padding: 0;
+  }
+
+  .menu-drawer--gemora .menu-drawer__menu.has-submenu {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0 2px;
+  }
+
+  .menu-drawer--gemora .menu-drawer__menu > .menu-drawer__list-item {
+    min-height: 0;
+  }
+
+  .menu-drawer--gemora .menu-drawer__list-item--flat {
+    margin-block-end: 0;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer__item {
+    min-height: 54px;
+    padding: 0;
+    border-radius: {{ block_settings.mobile_drawer_card_radius | default: 8 }}px;
+    color: {{ block_settings.mobile_drawer_text_color | default: '#2d2926' }};
+    overflow: hidden;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 54px;
+    padding: 0 16px;
+    isolation: isolate;
+    background:
+      var(--gemora-mobile-card-image, none) right 12px bottom / auto 58px no-repeat,
+      linear-gradient(90deg, var(--gemora-mobile-card-background), rgb(255 255 255 / 0.72));
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.74) 62%, transparent);
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer-card__content {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    max-width: calc(100% - 82px);
+    gap: 15px;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    color: {{ block_settings.mobile_drawer_icon_color | default: '#8a5d34' }};
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer-card__content .menu-drawer__menu-item-text {
+    min-width: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: {{ block_settings.mobile_drawer_font_size | default: 14 }}px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: none;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-drawer-card__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-inline-start: auto;
+    color: currentColor;
+    font-size: 12px;
+  }
+
+  .menu-drawer--gemora .menu-drawer__utility-links {
+    margin: auto 0 0;
+    padding: 0 2px;
+  }
+
+  .menu-drawer--gemora .menu-drawer__submenu {
+    background:
+      radial-gradient(circle at 85% 14%, rgb(196 154 108 / 0.12), transparent 28%),
+      linear-gradient(135deg, #fffaf5, #ffffff 52%, #fff7f1);
   }
 {% endstylesheet %}
