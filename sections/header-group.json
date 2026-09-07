@@ -1,12 +1,4 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
+
 {
   "type": "header",
   "name": "t:names.header",
@@ -44,7 +36,32 @@
             "text_color_navigation_bar": "",
             "drawer_accordion": true,
             "drawer_accordion_expand_first": false,
-            "drawer_dividers": false
+            "drawer_dividers": false,
+            "mobile_drawer_custom_design": true,
+            "mobile_drawer_brand_logo": "shopify://shop_images/Logo.png",
+            "mobile_drawer_brand_title": "GEMORA",
+            "mobile_drawer_brand_subtitle": "TIMELESS BRILLIANCE",
+            "mobile_drawer_font_size": 14,
+            "mobile_drawer_card_radius": 8,
+            "mobile_drawer_text_color": "#2d2926",
+            "mobile_drawer_icon_color": "#8a5d34",
+            "mobile_drawer_default_background": "#f7f0e8",
+            "mobile_drawer_plain_background": "#fffaf5",
+            "mobile_drawer_default_icon": "bi-circle",
+            "mobile_drawer_home_icon": "bi-house-door",
+            "mobile_drawer_home_background": "#f8efe6",
+            "mobile_drawer_gemstones_icon": "bi-gem",
+            "mobile_drawer_gemstones_background": "#f8e8df",
+            "mobile_drawer_precious_icon": "bi-circle",
+            "mobile_drawer_precious_background": "#e7f3f0",
+            "mobile_drawer_semi_precious_icon": "bi-flower2",
+            "mobile_drawer_semi_precious_background": "#f0edf8",
+            "mobile_drawer_jewellery_icon": "bi-stars",
+            "mobile_drawer_jewellery_background": "#f8efe4",
+            "mobile_drawer_sale_icon": "bi-tag",
+            "mobile_drawer_sale_background": "#fdeced",
+            "mobile_drawer_more_icon": "bi-three-dots",
+            "mobile_drawer_support_icon": "bi-headset"
           },
           "blocks": {}
         }
