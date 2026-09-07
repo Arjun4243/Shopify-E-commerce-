@@ -51,7 +51,19 @@
 
 <header-drawer
   class="header-drawer {{ class }}{% if block_settings.mobile_drawer_custom_design %} header-drawer--gemora{% endif %}"
-  style="--menu-image-border-radius: {{ image_border_radius }}px; --resource-card-corner-radius: {{ image_border_radius }}px;"
+  style="
+    --menu-image-border-radius: {{ image_border_radius }}px;
+    --resource-card-corner-radius: {{ image_border_radius }}px;
+    --gemora-mobile-card-radius: {{ block_settings.mobile_drawer_card_radius | default: 8 }}px;
+    --gemora-mobile-text-color: {{ block_settings.mobile_drawer_text_color | default: '#2d2926' }};
+    --gemora-mobile-icon-color: {{ block_settings.mobile_drawer_icon_color | default: '#8a5d34' }};
+    --gemora-mobile-font-size: {{ block_settings.mobile_drawer_font_size | default: 14 }}px;
+    --gemora-mobile-submenu-card-radius: {{ block_settings.mobile_drawer_submenu_card_radius | default: 8 }}px;
+    --gemora-mobile-submenu-text-color: {{ block_settings.mobile_drawer_submenu_text_color | default: '#2d2926' }};
+    --gemora-mobile-submenu-icon-color: {{ block_settings.mobile_drawer_submenu_icon_color | default: '#8a5d34' }};
+    --gemora-mobile-submenu-font-size: {{ block_settings.mobile_drawer_submenu_font_size | default: 14 }}px;
+    --gemora-mobile-submenu-icon-size: {{ block_settings.mobile_drawer_submenu_icon_size | default: 34 }}px;
+  "
 >
   <details
     id="Details-menu-drawer-container"
@@ -152,7 +164,62 @@
                 style="--menu-drawer-animation-index: {{ animation_index }};"
                 class="{%- if block_settings.drawer_accordion -%}menu-drawer__list-item--deep{%- else -%}menu-drawer__list-item--flat{%- endif -%}{% if block_settings.drawer_dividers %} menu-drawer__list-item--divider{% endif %}"
               >
-                {% if block_settings.drawer_accordion and link.links != blank %}
+                {% if block_settings.mobile_drawer_custom_design and link.links != blank %}
+                  <details
+                    id="Details-menu-drawer-menu-item-{{ forloop.index }}"
+                    class="menu-drawer__menu-container{% if block_settings.drawer_dividers %} menu-drawer__menu-container--divider{% endif %}"
+                  >
+                    <summary
+                      id="HeaderDrawer-{{ link.handle }}"
+                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if link.child_active %} menu-drawer__menu-item--active{% endif %} gemora-mobile-drawer__item"
+                      on:click="header-drawer/open/submenu"
+                    >
+                      {% render 'mobile-drawer-card-content',
+                        link: link,
+                        block_settings: block_settings,
+                        action_icon: 'bi-chevron-right'
+                      %}
+                    </summary>
+                    <div
+                      id="link-{{ link.handle | escape }}"
+                      class="menu-drawer__submenu has-submenu"
+                      tabindex="-1"
+                      style="--menu-drawer-animation-index: {{ animation_index }};"
+                    >
+                      <div class="menu-drawer__inner-submenu">
+                        {% render 'mobile-drawer-submenu-header', link: link, block_settings: block_settings %}
+                        <ul
+                          class="menu-drawer__menu menu-drawer__menu--childlist gemora-mobile-submenu"
+                          role="list"
+                          tabindex="-1"
+                        >
+                          {%- for childlink in link.links -%}
+                            <li
+                              class="menu-drawer__list-item"
+                              style="--menu-drawer-animation-index: {{ forloop.index }};"
+                            >
+                              <a
+                                id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
+                                href="{{ childlink.url }}"
+                                class="menu-drawer__menu-item menu-drawer__menu-item--child gemora-mobile-submenu__item{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
+                                {% if childlink.current %}
+                                  aria-current="page"
+                                {% endif %}
+                              >
+                                {% render 'mobile-drawer-submenu-link-content',
+                                  link: childlink,
+                                  parent_title: link.title,
+                                  block_settings: block_settings,
+                                  action_icon: ''
+                                %}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </div>
+                    </div>
+                  </details>
+                {% elsif block_settings.drawer_accordion and link.links != blank %}
                   {%- comment -%}
                     Accordion for links with children, in menus with fewer than 3 levels of links
                   {%- endcomment -%}
@@ -1759,8 +1826,8 @@
   .menu-drawer--gemora .gemora-mobile-drawer__item {
     min-height: 54px;
     padding: 0;
-    border-radius: {{ block_settings.mobile_drawer_card_radius | default: 8 }}px;
-    color: {{ block_settings.mobile_drawer_text_color | default: '#2d2926' }};
+    border-radius: var(--gemora-mobile-card-radius, 8px);
+    color: var(--gemora-mobile-text-color, #2d2926);
     overflow: hidden;
   }
 
@@ -1801,7 +1868,7 @@
     width: 18px;
     height: 18px;
     flex: 0 0 18px;
-    color: {{ block_settings.mobile_drawer_icon_color | default: '#8a5d34' }};
+    color: var(--gemora-mobile-icon-color, #8a5d34);
     font-size: 18px;
     line-height: 1;
   }
@@ -1810,7 +1877,7 @@
     min-width: 0;
     color: inherit;
     font-family: var(--font-heading--family);
-    font-size: {{ block_settings.mobile_drawer_font_size | default: 14 }}px;
+    font-size: var(--gemora-mobile-font-size, 14px);
     font-weight: 600;
     line-height: 1.2;
     text-transform: none;
@@ -1833,8 +1900,159 @@
   }
 
   .menu-drawer--gemora .menu-drawer__submenu {
+    transform: translateX(-100%);
     background:
       radial-gradient(circle at 85% 14%, rgb(196 154 108 / 0.12), transparent 28%),
       linear-gradient(135deg, #fffaf5, #ffffff 52%, #fff7f1);
+  }
+
+  .menu-drawer--gemora .menu-drawer__inner-submenu {
+    padding: 14px 12px 16px;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-banner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    align-items: center;
+    min-height: 60px;
+    margin-block-end: 12px;
+    padding: 8px;
+    color: var(--gemora-mobile-text-color, #2d2926);
+    border-radius: 16px;
+    overflow: hidden;
+    background:
+      var(--gemora-submenu-banner-image, none) right center / auto 76px no-repeat,
+      linear-gradient(90deg, var(--gemora-submenu-banner-background), #ffffff 54%, rgb(255 255 255 / 0.45));
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.22) 50%, transparent);
+    pointer-events: none;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-banner__button,
+  .menu-drawer--gemora .gemora-mobile-submenu-banner .menu-drawer__back-button,
+  .menu-drawer--gemora .gemora-mobile-submenu-banner .menu-drawer__close-button {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    color: #2d2926;
+    font-size: 18px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.82);
+    box-shadow: none;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-banner__title {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 4px;
+    justify-self: start;
+    max-width: 165px;
+    padding: 0 8px;
+    color: inherit;
+    text-align: left;
+    text-decoration: none;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-banner__heading {
+    font-family: var(--font-heading--family);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-banner__subtitle {
+    font-size: 8px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: rgb(45 41 38 / 0.48);
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu {
+    display: grid;
+    gap: 8px;
+    padding: 0 2px;
+  }
+
+  .menu-drawer--gemora .menu-drawer__menu--childlist.gemora-mobile-submenu,
+  .menu-drawer--gemora .menu-drawer__menu--grandchildlist {
+    margin: 0;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu__item {
+    min-height: 50px;
+    padding: 0;
+    border-radius: var(--gemora-mobile-submenu-card-radius, 8px);
+    color: var(--gemora-mobile-submenu-text-color, #2d2926);
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-card {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    gap: 12px;
+    padding: 7px 12px;
+    background: linear-gradient(90deg, var(--gemora-mobile-submenu-background), rgb(255 255 255 / 0.8));
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--gemora-mobile-submenu-icon-size, 34px);
+    height: var(--gemora-mobile-submenu-icon-size, 34px);
+    max-width: var(--gemora-mobile-submenu-icon-size, 34px);
+    max-height: var(--gemora-mobile-submenu-icon-size, 34px);
+    flex: 0 0 var(--gemora-mobile-submenu-icon-size, 34px);
+    color: var(--gemora-mobile-submenu-icon-color, #8a5d34);
+    font-size: 18px;
+    overflow: hidden;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-card__icon img {
+    display: block;
+    width: var(--gemora-mobile-submenu-icon-size, 34px) !important;
+    height: var(--gemora-mobile-submenu-icon-size, 34px) !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-card .menu-drawer__menu-item-text {
+    min-width: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: var(--gemora-mobile-submenu-font-size, 14px);
+    font-weight: 600;
+    line-height: 1.2;
+    text-transform: none;
+    white-space: normal;
+  }
+
+  .menu-drawer--gemora .gemora-mobile-submenu-card__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-inline-start: auto;
+    font-size: 12px;
   }
 {% endstylesheet %}

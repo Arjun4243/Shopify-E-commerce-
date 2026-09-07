@@ -1,4 +1,12 @@
-
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "t:names.header",
@@ -61,7 +69,20 @@
             "mobile_drawer_sale_icon": "bi-tag",
             "mobile_drawer_sale_background": "#fdeced",
             "mobile_drawer_more_icon": "bi-three-dots",
-            "mobile_drawer_support_icon": "bi-headset"
+            "mobile_drawer_support_icon": "bi-headset",
+            "mobile_drawer_submenu_banner_subtitle": "Explore our gemstones",
+            "mobile_drawer_submenu_banner_default_background": "#fffaf5",
+            "mobile_drawer_submenu_use_image_icons": true,
+            "mobile_drawer_submenu_default_icon": "bi-gem",
+            "mobile_drawer_submenu_font_size": 14,
+            "mobile_drawer_submenu_icon_size": 34,
+            "mobile_drawer_submenu_card_radius": 8,
+            "mobile_drawer_submenu_text_color": "#2d2926",
+            "mobile_drawer_submenu_icon_color": "#8a5d34",
+            "mobile_drawer_submenu_default_background": "#fffaf5",
+            "mobile_drawer_submenu_precious_background": "#e9f6f2",
+            "mobile_drawer_submenu_semi_precious_background": "#f1ecfb",
+            "mobile_drawer_submenu_jewellery_background": "#fbf0e4"
           },
           "blocks": {}
         }
