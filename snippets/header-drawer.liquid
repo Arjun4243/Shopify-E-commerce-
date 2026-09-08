@@ -1849,11 +1849,20 @@
     content: '';
     position: absolute;
     inset: 0;
-    z-index: -1;
-    background: linear-gradient(90deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.74) 62%, transparent);
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0.86),
+      rgb(255 255 255 / 0.92) 55%,
+      rgb(255 255 255 / 0.42) 72%,
+      transparent 88%
+    );
   }
 
   .menu-drawer--gemora .gemora-mobile-drawer-card__content {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     min-width: 0;
@@ -1884,6 +1893,8 @@
   }
 
   .menu-drawer--gemora .gemora-mobile-drawer-card__action {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
