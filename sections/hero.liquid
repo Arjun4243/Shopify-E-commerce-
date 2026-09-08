@@ -543,6 +543,40 @@
               loading="eager"
               fetchpriority="{{ fetch_priority }}"
             >
+            <div
+              class="hero-home-slideshow__content"
+              style="
+                --home-slide-heading-color: {{ section.settings.home_slideshow_heading_color }};
+                --home-slide-accent-color: {{ section.settings.home_slideshow_accent_color }};
+                --home-slide-text-color: {{ section.settings.home_slideshow_text_color }};
+                --home-slide-button-background: {{ section.settings.home_slideshow_button_background }};
+                --home-slide-button-color: {{ section.settings.home_slideshow_button_color }};
+              "
+            >
+              <h1 class="hero-home-slideshow__heading">
+                <span>{{ section.settings.home_slideshow_heading_line_1 | escape }}</span>
+                <span>
+                  <span class="hero-home-slideshow__heading-accent">
+                    {{- section.settings.home_slideshow_heading_accent | escape -}}
+                  </span>
+                  {{ section.settings.home_slideshow_heading_line_2 | escape }}
+                </span>
+              </h1>
+              {% if section.settings.home_slideshow_text != blank %}
+                <p class="hero-home-slideshow__text">
+                  {{ section.settings.home_slideshow_text | escape }}
+                </p>
+              {% endif %}
+              {% if section.settings.home_slideshow_button_label != blank %}
+                <a
+                  class="hero-home-slideshow__button"
+                  href="{{ section.settings.home_slideshow_button_link | default: routes.all_products_collection_url }}"
+                >
+                  {{ section.settings.home_slideshow_button_label | escape }}
+                  <span aria-hidden="true">&rarr;</span>
+                </a>
+              {% endif %}
+            </div>
           </div>
           <div class="hero-home-slideshow__slide">
             <img
@@ -720,17 +754,75 @@
     position: absolute;
     inset: 0;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 900ms ease;
   }
 
   .hero-home-slideshow__slide.is-active {
     opacity: 1;
+    pointer-events: auto;
   }
 
   .hero-home-slideshow__slide img {
     display: block;
     object-fit: cover;
     object-position: center;
+  }
+
+  .hero-home-slideshow__content {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--layer-flat);
+    width: min(46vw, 640px);
+    color: var(--home-slide-text-color, #163c36);
+    text-align: center;
+  }
+
+  .hero-home-slideshow__heading {
+    display: grid;
+    margin: 0;
+    color: var(--home-slide-heading-color, #08322d);
+    font-family: var(--font-heading--family);
+    font-size: clamp(44px, 5vw, 76px);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: 0;
+  }
+
+  .hero-home-slideshow__heading-accent {
+    color: var(--home-slide-accent-color, #8a5d34);
+  }
+
+  .hero-home-slideshow__text {
+    max-width: 520px;
+    margin: 18px 0 0;
+    margin-inline: auto;
+    color: var(--home-slide-text-color, #163c36);
+    font-size: clamp(16px, 1.5vw, 22px);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .hero-home-slideshow__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-width: 210px;
+    min-height: 54px;
+    margin-block-start: 24px;
+    padding: 0 28px;
+    color: var(--home-slide-button-color, #ffffff);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    border-radius: 999px;
+    background: var(--home-slide-button-background, #073f35);
+    box-shadow: 0 16px 34px rgb(7 63 53 / 0.18);
+    pointer-events: auto;
   }
 
   .hero-home-slideshow__dots {
@@ -756,6 +848,31 @@
   }
 
   @media screen and (max-width: 749px) {
+    .hero-home-slideshow__content {
+      top: 10%;
+      left: 50%;
+      width: min(82vw, 330px);
+    }
+
+    .hero-home-slideshow__heading {
+      font-size: clamp(30px, 11vw, 46px);
+    }
+
+    .hero-home-slideshow__text {
+      max-width: 280px;
+      margin-block-start: 10px;
+      font-size: 13px;
+    }
+
+    .hero-home-slideshow__button {
+      min-width: 145px;
+      min-height: 42px;
+      margin-block-start: 14px;
+      padding: 0 18px;
+      gap: 10px;
+      font-size: 14px;
+    }
+
     .hero-home-slideshow__slide img {
       object-position: center;
     }
@@ -925,6 +1042,75 @@
       "id": "use_home_slideshow",
       "label": "Use home slideshow banners",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Home slideshow content"
+    },
+    {
+      "type": "text",
+      "id": "home_slideshow_heading_line_1",
+      "label": "Heading first line",
+      "default": "Discover the"
+    },
+    {
+      "type": "text",
+      "id": "home_slideshow_heading_accent",
+      "label": "Heading accent word",
+      "default": "Beauty"
+    },
+    {
+      "type": "text",
+      "id": "home_slideshow_heading_line_2",
+      "label": "Heading second line",
+      "default": "of Nature"
+    },
+    {
+      "type": "textarea",
+      "id": "home_slideshow_text",
+      "label": "Description",
+      "default": "Premium natural gemstones and jewellery, carefully selected for your special moments."
+    },
+    {
+      "type": "text",
+      "id": "home_slideshow_button_label",
+      "label": "Button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "home_slideshow_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "home_slideshow_heading_color",
+      "label": "Heading color",
+      "default": "#08322d"
+    },
+    {
+      "type": "color",
+      "id": "home_slideshow_accent_color",
+      "label": "Accent color",
+      "default": "#8a5d34"
+    },
+    {
+      "type": "color",
+      "id": "home_slideshow_text_color",
+      "label": "Text color",
+      "default": "#163c36"
+    },
+    {
+      "type": "color",
+      "id": "home_slideshow_button_background",
+      "label": "Button background",
+      "default": "#073f35"
+    },
+    {
+      "type": "color",
+      "id": "home_slideshow_button_color",
+      "label": "Button text color",
+      "default": "#ffffff"
     },
     {
       "type": "header",
