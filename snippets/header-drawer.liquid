@@ -1924,7 +1924,7 @@
   .menu-drawer--gemora .gemora-mobile-submenu-banner {
     position: relative;
     display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    grid-template-columns: 36px minmax(0, 1fr);
     align-items: center;
     min-height: 58px;
     margin-block-end: 10px;
@@ -1933,18 +1933,12 @@
     border-radius: 16px;
     overflow: hidden;
     background:
-      var(--gemora-submenu-banner-image, none) right 42px center / auto 60px no-repeat,
-      linear-gradient(90deg, var(--gemora-submenu-banner-background), #ffffff 58%, rgb(255 255 255 / 0.5));
+      var(--gemora-submenu-banner-image, none) right 12px center / auto 58px no-repeat,
+      linear-gradient(90deg, var(--gemora-submenu-banner-background), #ffffff 58%, rgb(255 255 255 / 0.72));
   }
 
   .menu-drawer--gemora .gemora-mobile-submenu-banner::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(90deg, rgb(255 255 255 / 0.78), rgb(255 255 255 / 0.2) 48%, transparent 68%),
-      linear-gradient(90deg, transparent, rgb(255 255 255 / 0.86) calc(100% - 44px));
-    pointer-events: none;
+    display: none;
   }
 
   .menu-drawer--gemora .gemora-mobile-submenu-banner__button,
