@@ -459,9 +459,13 @@
 {% # A first-section hero consumes `--header-group-height` at first paint (`.hero-wrapper:first-child` rule below) %}
 {% render 'measure-header-heights', only_when_first_section: true %}
 
+{% liquid
+  assign use_home_slideshow = section.settings.use_home_slideshow
+%}
+
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero{% if use_home_slideshow %} hero--home-slideshow{% endif %}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
@@ -508,8 +512,7 @@
 
   <div
     class="hero__container spacing-style section section--full-width"
-    style="{% render 'spacing-style', settings: section.settings %}"
-  >
+    style="{% render 'spacing-style', settings: section.settings %}">
     {%- if section.settings.link != blank -%}
       <a
         href="{{ section.settings.link }}"
@@ -521,7 +524,7 @@
     {%- endif -%}
     <div
       class="hero__media-grid"
-      style="--hero-media-count: {{ media_count }};--hero-media-count-mobile: {{ media_count_mobile }};{%- if section.settings.image_1 != blank -%} --hero-media-aspect-ratio: {{ section.settings.image_1.aspect_ratio }};{% endif %}"
+      style="--hero-media-count: {% if use_home_slideshow %}1{% else %}{{ media_count }}{% endif %};--hero-media-count-mobile: {% if use_home_slideshow %}1{% else %}{{ media_count_mobile }}{% endif %};{%- if section.settings.image_1 != blank -%} --hero-media-aspect-ratio: {{ section.settings.image_1.aspect_ratio }};{% endif %}"
       data-testid="hero-media-wrapper"
     >
       {% liquid
@@ -529,7 +532,45 @@
           render 'overlay', settings: section.settings
         endif
       %}
-      {{ media }}
+      {% if use_home_slideshow %}
+        <div class="hero-home-slideshow" data-home-slideshow>
+          <div class="hero-home-slideshow__slide is-active">
+            <img
+              src="{{ 'home-banner-1.webp' | asset_url }}"
+              alt="Luxury gemstones and jewellery"
+              width="1600"
+              height="600"
+              loading="eager"
+              fetchpriority="{{ fetch_priority }}"
+            >
+          </div>
+          <div class="hero-home-slideshow__slide">
+            <img
+              src="{{ 'home-banner-2.webp' | asset_url }}"
+              alt="Emerald jewellery and gemstones"
+              width="2172"
+              height="724"
+              loading="lazy"
+            >
+          </div>
+          <div class="hero-home-slideshow__slide">
+            <img
+              src="{{ 'home-banner-3.webp' | asset_url }}"
+              alt="Gemstone color collection"
+              width="1600"
+              height="600"
+              loading="lazy"
+            >
+          </div>
+          <div class="hero-home-slideshow__dots" aria-hidden="true">
+            <span class="hero-home-slideshow__dot is-active"></span>
+            <span class="hero-home-slideshow__dot"></span>
+            <span class="hero-home-slideshow__dot"></span>
+          </div>
+        </div>
+      {% else %}
+        {{ media }}
+      {% endif %}
     </div>
     <div
       class="
@@ -547,6 +588,29 @@
     </div>
   </div>
 </div>
+
+{% if use_home_slideshow %}
+  <script>
+    (() => {
+      const hero = document.getElementById('Hero-{{ section.id }}');
+      const slideshow = hero?.querySelector('[data-home-slideshow]');
+      const slides = slideshow ? Array.from(slideshow.querySelectorAll('.hero-home-slideshow__slide')) : [];
+      const dots = slideshow ? Array.from(slideshow.querySelectorAll('.hero-home-slideshow__dot')) : [];
+
+      if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      let activeIndex = 0;
+
+      window.setInterval(() => {
+        slides[activeIndex].classList.remove('is-active');
+        dots[activeIndex]?.classList.remove('is-active');
+        activeIndex = (activeIndex + 1) % slides.length;
+        slides[activeIndex].classList.add('is-active');
+        dots[activeIndex]?.classList.add('is-active');
+      }, 4500);
+    })();
+  </script>
+{% endif %}
 
 {% stylesheet %}
   .hero-wrapper {
@@ -634,6 +698,72 @@
     overflow: hidden;
     position: relative;
     z-index: var(--layer-base);
+  }
+
+  .hero--home-slideshow .hero__media-grid {
+    display: block;
+  }
+
+  .hero-home-slideshow,
+  .hero-home-slideshow__slide,
+  .hero-home-slideshow__slide img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-home-slideshow {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-home-slideshow__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms ease;
+  }
+
+  .hero-home-slideshow__slide.is-active {
+    opacity: 1;
+  }
+
+  .hero-home-slideshow__slide img {
+    display: block;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-home-slideshow__dots {
+    position: absolute;
+    right: 24px;
+    bottom: 20px;
+    z-index: var(--layer-flat);
+    display: flex;
+    gap: 8px;
+  }
+
+  .hero-home-slideshow__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.52);
+    transition: width 220ms ease, background 220ms ease;
+  }
+
+  .hero-home-slideshow__dot.is-active {
+    width: 24px;
+    background: #ffffff;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero-home-slideshow__slide img {
+      object-position: center;
+    }
+
+    .hero-home-slideshow__dots {
+      right: 16px;
+      bottom: 14px;
+    }
   }
 
   /* Mobile/Desktop media visibility */
@@ -790,6 +920,12 @@
     "groups": ["header"]
   },
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_home_slideshow",
+      "label": "Use home slideshow banners",
+      "default": false
+    },
     {
       "type": "header",
       "content": "t:content.media_1"
