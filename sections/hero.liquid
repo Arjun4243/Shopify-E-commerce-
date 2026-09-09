@@ -760,6 +760,11 @@
     min-height: calc(var(--hero-min-height) - var(--hero-height-offset));
   }
 
+  .hero--home-slideshow {
+    min-height: clamp(300px, 28vw, 420px);
+    overflow: hidden;
+  }
+
   .hero[data-shopify-visual-preview] {
     --hero-min-height: 600px;
 
@@ -835,6 +840,10 @@
 
   .hero--home-slideshow .hero__media-grid {
     display: block;
+    left: 50%;
+    right: auto;
+    width: 100vw;
+    transform: translateX(-50%);
   }
 
   .hero-home-slideshow,
@@ -845,8 +854,16 @@
   }
 
   .hero-home-slideshow {
+    --home-slide-image-scale: 1.03;
+    --home-slide-image-y: 45%;
+
     position: relative;
     overflow: hidden;
+  }
+
+  .hero-home-slideshow__slide--dark {
+    --home-slide-image-scale: 1.07;
+    --home-slide-image-y: 48%;
   }
 
   .hero-home-slideshow__slide {
@@ -874,8 +891,36 @@
 
   .hero-home-slideshow__slide img {
     display: block;
+    width: 100%;
+    max-width: none;
     object-fit: cover;
-    object-position: center;
+    object-position: center var(--home-slide-image-y, 45%);
+    transform: scale(var(--home-slide-image-scale));
+    transform-origin: center;
+  }
+
+  @media screen and (max-width: 1440px) {
+    .hero-home-slideshow {
+      --home-slide-image-scale: 1.08;
+      --home-slide-image-y: 42%;
+    }
+
+    .hero-home-slideshow__slide--dark {
+      --home-slide-image-scale: 1.12;
+      --home-slide-image-y: 46%;
+    }
+  }
+
+  @media screen and (max-width: 1100px) {
+    .hero-home-slideshow {
+      --home-slide-image-scale: 1.14;
+      --home-slide-image-y: 40%;
+    }
+
+    .hero-home-slideshow__slide--dark {
+      --home-slide-image-scale: 1.18;
+      --home-slide-image-y: 44%;
+    }
   }
 
   .hero-home-slideshow__content {
@@ -1006,6 +1051,20 @@
   }
 
   @media screen and (max-width: 749px) {
+    .hero--home-slideshow {
+      min-height: clamp(300px, 78vw, 390px);
+    }
+
+    .hero-home-slideshow {
+      --home-slide-image-scale: 1.22;
+      --home-slide-image-y: 42%;
+    }
+
+    .hero-home-slideshow__slide--dark {
+      --home-slide-image-scale: 1.28;
+      --home-slide-image-y: 45%;
+    }
+
     .hero-home-slideshow__content {
       top: 10%;
       left: 50%;
@@ -1032,7 +1091,7 @@
     }
 
     .hero-home-slideshow__slide img {
-      object-position: center;
+      object-position: center var(--home-slide-image-y, 42%);
     }
 
     .hero-home-slideshow__arrow,
