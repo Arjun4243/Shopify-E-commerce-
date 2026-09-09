@@ -6,12 +6,11 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "hero_jVaWmY": {
       "type": "hero",
-      "blocks": {},
-      "block_order": [],
       "name": "t:names.hero",
       "settings": {
         "use_home_slideshow": true,

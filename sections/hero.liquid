@@ -578,7 +578,7 @@
               {% endif %}
             </div>
           </div>
-          <div class="hero-home-slideshow__slide">
+          <div class="hero-home-slideshow__slide hero-home-slideshow__slide--dark">
             <img
               src="{{ 'home-banner-2.webp' | asset_url }}"
               alt="Emerald jewellery and gemstones"
@@ -586,6 +586,33 @@
               height="724"
               loading="lazy"
             >
+            <div
+              class="hero-home-slideshow__content"
+              style="
+                --home-slide-heading-color: #ffffff;
+                --home-slide-accent-color: #d7ad69;
+                --home-slide-text-color: #f6f1e8;
+                --home-slide-button-background: #f0c77f;
+                --home-slide-button-color: #24342e;
+              "
+            >
+              <h1 class="hero-home-slideshow__heading">
+                <span>Browse our latest</span>
+                <span>
+                  <span class="hero-home-slideshow__heading-accent">products</span>
+                </span>
+              </h1>
+              <p class="hero-home-slideshow__text">
+                Authentic gemstones and fine jewellery, made to be treasured forever.
+              </p>
+              <a
+                class="hero-home-slideshow__button"
+                href="{{ routes.all_products_collection_url }}"
+              >
+                Shop All
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
           </div>
           <div class="hero-home-slideshow__slide">
             <img
@@ -823,6 +850,17 @@
     background: var(--home-slide-button-background, #073f35);
     box-shadow: 0 16px 34px rgb(7 63 53 / 0.18);
     pointer-events: auto;
+  }
+
+  .hero-home-slideshow__slide--dark .hero-home-slideshow__heading,
+  .hero-home-slideshow__slide--dark .hero-home-slideshow__text {
+    text-shadow: 0 2px 18px rgb(0 0 0 / 0.22);
+  }
+
+  .hero-home-slideshow__slide--dark .hero-home-slideshow__button {
+    min-width: 200px;
+    border-radius: 0;
+    box-shadow: 0 14px 28px rgb(0 0 0 / 0.16);
   }
 
   .hero-home-slideshow__dots {
