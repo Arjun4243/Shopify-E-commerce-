@@ -533,7 +533,7 @@
         endif
       %}
       {% if use_home_slideshow %}
-        <div class="hero-home-slideshow" data-home-slideshow>
+        <div class="hero-home-slideshow" data-home-slideshow data-direction="next">
           <div class="hero-home-slideshow__slide is-active">
             <img
               src="{{ 'home-banner-1.webp' | asset_url }}"
@@ -614,19 +614,36 @@
               </a>
             </div>
           </div>
-          <div class="hero-home-slideshow__slide">
-            <img
-              src="{{ 'home-banner-3.webp' | asset_url }}"
-              alt="Gemstone color collection"
-              width="1600"
-              height="600"
-              loading="lazy"
-            >
-          </div>
-          <div class="hero-home-slideshow__dots" aria-hidden="true">
-            <span class="hero-home-slideshow__dot is-active"></span>
-            <span class="hero-home-slideshow__dot"></span>
-            <span class="hero-home-slideshow__dot"></span>
+          <button
+            class="hero-home-slideshow__arrow hero-home-slideshow__arrow--prev"
+            type="button"
+            data-home-slideshow-prev
+            aria-label="Previous slide"
+          >
+            <span aria-hidden="true">&larr;</span>
+          </button>
+          <button
+            class="hero-home-slideshow__arrow hero-home-slideshow__arrow--next"
+            type="button"
+            data-home-slideshow-next
+            aria-label="Next slide"
+          >
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+          <div class="hero-home-slideshow__dots" aria-label="Choose slide" role="group">
+            <button
+              class="hero-home-slideshow__dot is-active"
+              type="button"
+              data-home-slideshow-dot
+              aria-label="Show slide 1"
+              aria-current="true"
+            ></button>
+            <button
+              class="hero-home-slideshow__dot"
+              type="button"
+              data-home-slideshow-dot
+              aria-label="Show slide 2"
+            ></button>
           </div>
         </div>
       {% else %}
@@ -656,19 +673,74 @@
       const hero = document.getElementById('Hero-{{ section.id }}');
       const slideshow = hero?.querySelector('[data-home-slideshow]');
       const slides = slideshow ? Array.from(slideshow.querySelectorAll('.hero-home-slideshow__slide')) : [];
-      const dots = slideshow ? Array.from(slideshow.querySelectorAll('.hero-home-slideshow__dot')) : [];
+      const dots = slideshow ? Array.from(slideshow.querySelectorAll('[data-home-slideshow-dot]')) : [];
+      const prevButton = slideshow?.querySelector('[data-home-slideshow-prev]');
+      const nextButton = slideshow?.querySelector('[data-home-slideshow-next]');
 
-      if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!slideshow || slides.length < 2) return;
 
       let activeIndex = 0;
+      let autoplayTimer;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-      window.setInterval(() => {
+      const showSlide = (nextIndex, direction = 'next') => {
+        if (nextIndex === activeIndex) return;
+
+        const normalizedIndex = (nextIndex + slides.length) % slides.length;
+
+        slideshow.dataset.direction = direction;
         slides[activeIndex].classList.remove('is-active');
         dots[activeIndex]?.classList.remove('is-active');
-        activeIndex = (activeIndex + 1) % slides.length;
+        dots[activeIndex]?.removeAttribute('aria-current');
+
+        activeIndex = normalizedIndex;
+
         slides[activeIndex].classList.add('is-active');
         dots[activeIndex]?.classList.add('is-active');
-      }, 4500);
+        dots[activeIndex]?.setAttribute('aria-current', 'true');
+      };
+
+      const nextSlide = () => showSlide(activeIndex + 1, 'next');
+      const previousSlide = () => showSlide(activeIndex - 1, 'previous');
+
+      const stopAutoplay = () => {
+        window.clearInterval(autoplayTimer);
+      };
+
+      const startAutoplay = () => {
+        stopAutoplay();
+
+        if (!prefersReducedMotion.matches) {
+          autoplayTimer = window.setInterval(nextSlide, 4500);
+        }
+      };
+
+      const resetAutoplay = () => {
+        stopAutoplay();
+        startAutoplay();
+      };
+
+      prevButton?.addEventListener('click', () => {
+        previousSlide();
+        resetAutoplay();
+      });
+
+      nextButton?.addEventListener('click', () => {
+        nextSlide();
+        resetAutoplay();
+      });
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          showSlide(index, index > activeIndex ? 'next' : 'previous');
+          resetAutoplay();
+        });
+      });
+
+      slideshow.addEventListener('mouseenter', stopAutoplay);
+      slideshow.addEventListener('mouseleave', startAutoplay);
+
+      startAutoplay();
     })();
   </script>
 {% endif %}
@@ -782,12 +854,22 @@
     inset: 0;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 900ms ease;
+    transform: translateX(0) scale(1.01);
+    transition: opacity 900ms ease, transform 900ms ease;
+  }
+
+  .hero-home-slideshow[data-direction='next'] .hero-home-slideshow__slide {
+    transform: translateX(-24px) scale(1.01);
+  }
+
+  .hero-home-slideshow[data-direction='previous'] .hero-home-slideshow__slide {
+    transform: translateX(24px) scale(1.01);
   }
 
   .hero-home-slideshow__slide.is-active {
     opacity: 1;
     pointer-events: auto;
+    transform: translateX(0) scale(1);
   }
 
   .hero-home-slideshow__slide img {
@@ -859,8 +941,43 @@
 
   .hero-home-slideshow__slide--dark .hero-home-slideshow__button {
     min-width: 200px;
-    border-radius: 0;
+    border-radius: 999px;
     box-shadow: 0 14px 28px rgb(0 0 0 / 0.16);
+  }
+
+  .hero-home-slideshow__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: var(--layer-flat);
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    color: #ffffff;
+    font-size: 20px;
+    line-height: 1;
+    border: 1px solid rgb(255 255 255 / 0.5);
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.24);
+    box-shadow: 0 12px 28px rgb(0 0 0 / 0.16);
+    backdrop-filter: blur(10px);
+    transform: translateY(-50%);
+    transition: background 180ms ease, transform 180ms ease;
+    cursor: pointer;
+  }
+
+  .hero-home-slideshow__arrow:hover {
+    background: rgb(0 0 0 / 0.38);
+    transform: translateY(-50%) scale(1.06);
+  }
+
+  .hero-home-slideshow__arrow--prev {
+    left: 24px;
+  }
+
+  .hero-home-slideshow__arrow--next {
+    right: 24px;
   }
 
   .hero-home-slideshow__dots {
@@ -875,8 +992,11 @@
   .hero-home-slideshow__dot {
     width: 8px;
     height: 8px;
+    padding: 0;
+    border: 0;
     border-radius: 999px;
     background: rgb(255 255 255 / 0.52);
+    cursor: pointer;
     transition: width 220ms ease, background 220ms ease;
   }
 
@@ -913,6 +1033,11 @@
 
     .hero-home-slideshow__slide img {
       object-position: center;
+    }
+
+    .hero-home-slideshow__arrow,
+    .hero-home-slideshow__dots {
+      display: none;
     }
 
     .hero-home-slideshow__dots {
